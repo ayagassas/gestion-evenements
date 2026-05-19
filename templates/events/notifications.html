@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<h1>🔔 Notifications</h1>
+{% if notifications %}
+<div class="panel" style="padding:0;">
+    <table class="table" style="box-shadow:none;">
+        <tbody>
+            {% for n in notifications %}
+            <tr>
+                <td style="width:130px;" class="meta">{{ n.created_at|date:"d/m H:i" }}</td>
+                <td>
+                    {% if n.url %}<a href="{{ n.url }}">{{ n.message }}</a>
+                    {% else %}{{ n.message }}{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>Aucune notification.</p>
+{% endif %}
+{% endblock %}

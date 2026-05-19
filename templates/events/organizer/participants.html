@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Participants — {{ event.title }}{% endblock %}
+{% block content %}
+<h1>👥 Participants : {{ event.title }}</h1>
+<p class="meta">📅 {{ event.date|date:"d/m/Y H:i" }} · 📍 {{ event.location }}</p>
+<a href="{% url 'events:organizer_dashboard' %}" class="btn btn-outline btn-sm">← Dashboard</a>
+
+{% if registrations %}
+<table class="table" style="margin-top:1rem;">
+    <thead>
+        <tr><th>#</th><th>Utilisateur</th><th>Email</th><th>Inscrit le</th><th>Statut</th><th>Check-in</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for r in registrations %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ r.user.username }}</td>
+            <td>{{ r.user.email }}</td>
+            <td>{{ r.created_at|date:"d/m/Y H:i" }}</td>
+            <td><span class="pill {% if r.status == 'confirmed' %}pill-green{% else %}pill-yellow{% endif %}">{{ r.get_status_display }}</span></td>
+            <td>
+                {% if r.checked_in %}
+                    <span class="pill pill-blue">✅ {{ r.checked_in_at|date:"H:i" }}</span>
+                {% else %}
+                    <span class="pill pill-gray">—</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not r.checked_in %}
+                <form method="post" action="{% url 'events:check_in' r.id %}" class="inline">
+                    {% csrf_token %}
+                    <button class="btn btn-success btn-sm">Check-in</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Aucun participant pour le moment.</p>
+{% endif %}
+{% endblock %}

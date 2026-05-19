@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<div class="detail-grid">
+    <div>
+        <div class="detail-hero"
+             {% if event.image %}style="background-image:url('{{ event.image.url }}');"{% endif %}></div>
+        <div class="panel">
+            <h1>{{ event.title }}</h1>
+            <p class="meta">
+                📅 <strong>{{ event.date|date:"l d F Y — H:i" }}</strong><br>
+                📍 {{ event.location }}<br>
+                👤 Organisé par {{ event.organizer.username }}
+            </p>
+            <hr>
+            <p>{{ event.description|linebreaks }}</p>
+        </div>
+
+        {% if event.latitude and event.longitude %}
+        <div class="panel">
+            <h2>📍 Localisation</h2>
+            {% if google_maps_key %}
+            <iframe width="100%" height="300" frameborder="0" style="border:0; border-radius:6px;"
+                src="https://www.google.com/maps/embed/v1/place?key={{ google_maps_key }}&q={{ event.latitude }},{{ event.longitude }}"
+                allowfullscreen></iframe>
+            {% else %}
+            <iframe width="100%" height="300" frameborder="0" style="border:0; border-radius:6px;"
+                src="https://www.openstreetmap.org/export/embed.html?bbox={{ event.longitude|add:'-0.01' }},{{ event.latitude|add:'-0.01' }},{{ event.longitude|add:'0.01' }},{{ event.latitude|add:'0.01' }}&layer=mapnik&marker={{ event.latitude }},{{ event.longitude }}"></iframe>
+            <p class="meta"><a href="https://www.openstreetmap.org/?mlat={{ event.latitude }}&mlon={{ event.longitude }}#map=16/{{ event.latitude }}/{{ event.longitude }}" target="_blank">Voir sur OpenStreetMap →</a></p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <aside>
+        <div class="panel">
+            <h2>Participer</h2>
+            <p><span class="pill pill-blue">{{ event.participants_count }} inscrit{{ event.participants_count|pluralize }}</span></p>
+            {% if user.is_authenticated %}
+                {% if user_registration %}
+                    <p>✅ Vous êtes inscrit ({{ user_registration.get_status_display }}).</p>
+                    <a class="btn btn-success" href="{% url 'events:download_ticket' user_registration.id %}">
+                        ⬇️ Télécharger le ticket
+                    </a>
+                    <form method="post" action="{% url 'events:unregister' event.pk %}" style="margin-top:.6rem;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Confirmer la désinscription ?');">
+                            Se désinscrire
+                        </button>
+                    </form>
+                {% elif user.id == event.organizer_id %}
+                    <p>Vous êtes l'organisateur de cet événement.</p>
+                    <a class="btn btn-outline" href="{% url 'events:participants' event.pk %}">Voir les participants</a>
+                {% else %}
+                    <form method="post" action="{% url 'events:register' event.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">🎟️ Participer</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <p><a class="btn btn-primary" href="{% url 'accounts:login' %}?next={{ request.path }}">Connectez-vous pour participer</a></p>
+            {% endif %}
+        </div>
+
+        {% if user.id == event.organizer_id or user.is_app_admin %}
+        <div class="panel">
+            <h2>Gestion</h2>
+            <a href="{% url 'events:event_update' event.pk %}" class="btn btn-outline btn-sm">Modifier</a>
+            <a href="{% url 'events:event_delete' event.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
+        </div>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Mon profil{% endblock %}
+{% block content %}
+<h1>👤 Mon profil</h1>
+<div class="panel">
+    <p><strong>Nom d'utilisateur :</strong> {{ user.username }}</p>
+    <p><strong>Email :</strong> {{ user.email }}</p>
+    <p><strong>Rôle :</strong> <span class="pill pill-blue">{{ user.get_role_display }}</span></p>
+    <p><strong>Membre depuis :</strong> {{ user.created_at|date:"d/m/Y" }}</p>
+</div>
+
+<h2>🎟️ Mes événements inscrits</h2>
+{% if registrations %}
+<table class="table">
+    <thead>
+        <tr><th>Événement</th><th>Date</th><th>Lieu</th><th>Statut</th><th>Ticket</th></tr>
+    </thead>
+    <tbody>
+        {% for r in registrations %}
+        <tr>
+            <td><a href="{% url 'events:detail' r.event.pk %}">{{ r.event.title }}</a></td>
+            <td>{{ r.event.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ r.event.location }}</td>
+            <td>
+                <span class="pill {% if r.status == 'confirmed' %}pill-green{% else %}pill-yellow{% endif %}">
+                    {{ r.get_status_display }}
+                </span>
+                {% if r.checked_in %}<span class="pill pill-blue">Checké</span>{% endif %}
+            </td>
+            <td>
+                <a href="{% url 'events:download_ticket' r.id %}" class="btn btn-success btn-sm">⬇️ PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Aucune inscription pour le moment. <a href="{% url 'events:home' %}">Explorer les événements →</a></p>
+{% endif %}
+{% endblock %}

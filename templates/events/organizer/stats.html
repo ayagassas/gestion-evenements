@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Statistiques{% endblock %}
+{% block content %}
+<h1>📊 Statistiques</h1>
+
+<div class="stat-row">
+    <div class="stat"><div class="n">{{ totals.events }}</div><div class="l">Événements organisés</div></div>
+    <div class="stat"><div class="n">{{ totals.registrations }}</div><div class="l">Inscriptions totales</div></div>
+    <div class="stat"><div class="n">{{ totals.check_ins }}</div><div class="l">Check-ins effectués</div></div>
+</div>
+
+<h2>Détail par événement</h2>
+{% if rows %}
+<table class="table">
+    <thead>
+        <tr><th>Événement</th><th>Date</th><th>Confirmés</th><th>Check-in</th><th>Taux présence</th></tr>
+    </thead>
+    <tbody>
+        {% for e in rows %}
+        <tr>
+            <td><a href="{% url 'events:detail' e.pk %}">{{ e.title }}</a></td>
+            <td>{{ e.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ e.confirmed }}</td>
+            <td>{{ e.checked }}</td>
+            <td>
+                {% if e.confirmed %}
+                    {% widthratio e.checked e.confirmed 100 %}%
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Pas encore de données.</p>
+{% endif %}
+{% endblock %}

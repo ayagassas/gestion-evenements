@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Event Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-inner">
+        <a href="{% url 'events:home' %}" class="brand">🎟️ Event Manager</a>
+        <div class="nav-links">
+            <a href="{% url 'events:home' %}">Accueil</a>
+            {% if user.is_authenticated %}
+                {% if user.is_organizer %}
+                    <a href="{% url 'events:organizer_dashboard' %}">Dashboard</a>
+                    <a href="{% url 'events:stats' %}">Stats</a>
+                {% endif %}
+                {% if user.is_app_admin %}
+                    <a href="{% url 'events:admin_users' %}">Users</a>
+                    <a href="{% url 'events:admin_events' %}">Events</a>
+                {% endif %}
+                <a href="{% url 'events:notifications' %}">
+                    🔔
+                    {% if unread_notifications_count %}
+                        <span class="badge">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'accounts:profile' %}">👤 {{ user.username }}</a>
+                <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Déconnexion</button>
+                </form>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">Connexion</a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">S'inscrire</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="msg msg-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p>Projet Django — Gestion des Événements · aya gassas · smail moataz · aymane khachache</p>
+</footer>
+</body>
+</html>

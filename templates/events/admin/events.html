@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Gestion événements{% endblock %}
+{% block content %}
+<h1>📅 Gestion des événements</h1>
+<table class="table">
+    <thead>
+        <tr><th>Titre</th><th>Date</th><th>Organisateur</th><th>Inscriptions</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for e in events %}
+        <tr>
+            <td><a href="{% url 'events:detail' e.pk %}">{{ e.title }}</a></td>
+            <td>{{ e.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ e.organizer.username }}</td>
+            <td><span class="pill pill-blue">{{ e.reg_count }}</span></td>
+            <td>
+                <a href="{% url 'events:event_update' e.pk %}" class="btn btn-outline btn-sm">✏️</a>
+                <form method="post" action="{% url 'events:admin_event_delete' e.pk %}" class="inline"
+                      onsubmit="return confirm('Supprimer {{ e.title }} ?');">
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-sm">🗑️</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

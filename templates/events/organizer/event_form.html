@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}{% if mode == 'create' %}Nouvel événement{% else %}Modifier {{ event.title }}{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if mode == 'create' %}➕ Créer un événement{% else %}✏️ Modifier l'événement{% endif %}</h1>
+<form method="post" enctype="multipart/form-data" class="app-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">
+        {% if mode == 'create' %}Créer{% else %}Enregistrer{% endif %}
+    </button>
+    <a href="{% url 'events:organizer_dashboard' %}" class="btn btn-outline">Annuler</a>
+</form>
+{% endblock %}

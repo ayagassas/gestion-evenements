@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Gestion utilisateurs{% endblock %}
+{% block content %}
+<h1>👥 Gestion des utilisateurs</h1>
+<table class="table">
+    <thead>
+        <tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Créé</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.username }}{% if u.is_superuser %} ⭐{% endif %}</td>
+            <td>{{ u.email }}</td>
+            <td>
+                <form method="post" action="{% url 'events:admin_user_set_role' u.id %}" class="inline">
+                    {% csrf_token %}
+                    <select name="role" onchange="this.form.submit()">
+                        <option value="user" {% if u.role == 'user' %}selected{% endif %}>User</option>
+                        <option value="organizer" {% if u.role == 'organizer' %}selected{% endif %}>Organizer</option>
+                        <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </form>
+            </td>
+            <td>{{ u.created_at|date:"d/m/Y" }}</td>
+            <td>
+                {% if u != user %}
+                <form method="post" action="{% url 'events:admin_user_delete' u.id %}" class="inline"
+                      onsubmit="return confirm('Supprimer {{ u.username }} ?');">
+                    {% csrf_token %}
+                    <button class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

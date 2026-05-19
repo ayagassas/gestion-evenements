@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Accueil — Événements{% endblock %}
+{% block content %}
+<h1>🏠 Événements à venir</h1>
+
+<form method="get" class="search-bar">
+    {{ form.q }}
+    {{ form.location }}
+    {{ form.date_from }}
+    <button type="submit" class="btn btn-primary">Rechercher</button>
+</form>
+
+{% if events %}
+<div class="cards">
+    {% for event in events %}
+    <article class="card">
+        <div class="card-img{% if event.image %} has-img{% endif %}"
+             {% if event.image %}style="background-image: url('{{ event.image.url }}');"{% endif %}></div>
+        <div class="card-body">
+            <h3><a href="{% url 'events:detail' event.pk %}">{{ event.title }}</a></h3>
+            <div class="meta">
+                📅 {{ event.date|date:"d/m/Y H:i" }}<br>
+                📍 {{ event.location }}
+            </div>
+            <p class="grow">{{ event.description|truncatewords:18 }}</p>
+            <div>
+                <span class="pill pill-blue">{{ event.reg_count }} participant{{ event.reg_count|pluralize }}</span>
+                <a href="{% url 'events:detail' event.pk %}" class="btn btn-outline btn-sm" style="float:right;">Voir →</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<p>Aucun événement trouvé.</p>
+{% endif %}
+{% endblock %}

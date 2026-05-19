@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Supprimer {{ event.title }}{% endblock %}
+{% block content %}
+<h1>🗑️ Confirmer la suppression</h1>
+<div class="panel">
+    <p>Êtes-vous sûr de vouloir supprimer <strong>{{ event.title }}</strong> ?</p>
+    <p>Cette action supprimera aussi toutes les inscriptions et tickets associés.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+        <a href="{% url 'events:organizer_dashboard' %}" class="btn btn-outline">Annuler</a>
+    </form>
+</div>
+{% endblock %}

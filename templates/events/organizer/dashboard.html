@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Organisateur{% endblock %}
+{% block content %}
+<h1>🧑‍💼 Dashboard Organisateur</h1>
+
+<div class="stat-row">
+    <div class="stat"><div class="n">{{ total_events }}</div><div class="l">Événements</div></div>
+    <div class="stat"><div class="n">{{ total_registrations }}</div><div class="l">Inscriptions</div></div>
+    <div class="stat">
+        <a href="{% url 'events:event_create' %}" class="btn btn-primary">+ Créer un événement</a>
+    </div>
+</div>
+
+{% if events %}
+<table class="table">
+    <thead>
+        <tr><th>Titre</th><th>Date</th><th>Lieu</th><th>Inscriptions</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for e in events %}
+        <tr>
+            <td><a href="{% url 'events:detail' e.pk %}">{{ e.title }}</a></td>
+            <td>{{ e.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ e.location }}</td>
+            <td><span class="pill pill-blue">{{ e.reg_count }}</span></td>
+            <td>
+                <a href="{% url 'events:participants' e.pk %}" class="btn btn-outline btn-sm">Participants</a>
+                <a href="{% url 'events:event_update' e.pk %}" class="btn btn-outline btn-sm">✏️</a>
+                <a href="{% url 'events:event_delete' e.pk %}" class="btn btn-danger btn-sm">🗑️</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Aucun événement pour le moment.</p>
+{% endif %}
+{% endblock %}
